@@ -1,3 +1,4 @@
+using ngAppApi.Core;
 using ngAppApi.Core.Cqs;
 using ngAppApi.TestPOC.Commands.Handlers;
 using ngAppApi.TestPOC.Queries.Handlers;
@@ -44,6 +45,9 @@ namespace ngAppApi
                 //    .AllowCredentials();
                 //});
             });
+            //TODO: Skoñczyæ to
+            IDependencyInjectionConfig diConfig = new MicrosoftDependencyInjectionConfiguration(
+                builder.Services, Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped);
 
             builder.Services.AddScoped<ICommandHandlerAsync, DoSthCommandHandlerAsync>();
 
@@ -51,8 +55,10 @@ namespace ngAppApi
             builder.Services.AddScoped<IQueryHandlerAsync, TestListDataQueryHandler>();
             builder.Services.AddScoped<ICqsDispatcher, CqsDispatcher>();
 
-            var app = builder.Build();
+            ngAppApi.TestPOC.Bootstrap.Configure(diConfig);
 
+            var app = builder.Build();
+            // Just to check releases, you didn't see it (flash!)
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
