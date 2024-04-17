@@ -2,6 +2,7 @@ using ngAppApi.Core;
 using ngAppApi.Core.Cqs;
 using ngAppApi.TestPOC.Commands.Handlers;
 using ngAppApi.TestPOC.Queries.Handlers;
+using Serilog;
 
 namespace ngAppApi
 {
@@ -20,10 +21,21 @@ namespace ngAppApi
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            var logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .Enrich.FromLogContext()
+                .CreateLogger();
+
+            var sentimentAnalysisModuleWebAssembly = typeof(SentimentAnalysis.Web.Bootstrap).Assembly;
+
+            builder.Services.AddControllers()
+                .AddApplicationPart(sentimentAnalysisModuleWebAssembly);
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Logging.ClearProviders();
+            builder.Services.AddSerilog(logger);
 
             builder.Services.AddCors(o =>
             {
@@ -45,7 +57,6 @@ namespace ngAppApi
                 //    .AllowCredentials();
                 //});
             });
-            //TODO: Skoñczyæ to
             IDependencyInjectionConfig diConfig = new MicrosoftDependencyInjectionConfiguration(
                 builder.Services, Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped);
 
@@ -56,6 +67,7 @@ namespace ngAppApi
             builder.Services.AddScoped<ICqsDispatcher, CqsDispatcher>();
 
             ngAppApi.TestPOC.Bootstrap.Configure(diConfig);
+            ngAppApi.SentimentAnalysis.Web.Bootstrap.Configure(diConfig);
 
             var app = builder.Build();
             // Just to check releases, you didn't see it (flash!)

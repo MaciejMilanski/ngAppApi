@@ -6,7 +6,7 @@ namespace ngAppApi.TestPOC.Commands.Handlers
     public class DoSthCommandHandlerAsync : CommandHandlerAsync<DoSthCommand>
     {
         private readonly ITestService _testService;
-        public DoSthCommandHandlerAsync(TestService testService)
+        public DoSthCommandHandlerAsync(ITestService testService)
         {
             _testService = testService;
         }

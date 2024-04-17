@@ -31,6 +31,7 @@ namespace ngAppApi.Controllers
         {
             var query = new TestSingularDataQuery();
             var foobar = await _cqsDispatcher.HandleQueryAsync<TestSingularDataQuery, WeatherForecast>(query);
+            _logger.LogInformation("dasdas");
             return Ok(foobar);
         }
 
